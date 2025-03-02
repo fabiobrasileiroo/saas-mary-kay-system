@@ -9,8 +9,18 @@ import { RecentSales } from "@/components/recent-sales"
 import { ProductsTable } from "@/components/products-table"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { TooltipTerm } from "@/components/tooltip-term"
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { UserButton } from "@clerk/nextjs";
+// import { usePathname } from "next/navigation";
 
-export default function Home() {
+
+export default async function Home() {
+  //  const pathname = usePathname();
+  const { userId } = await auth();
+  if (!userId) {
+    redirect("/login");
+  }
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-10 border-b bg-background">
@@ -30,6 +40,7 @@ export default function Home() {
               <Button variant="ghost">Relatórios</Button>
             </Link>
             <ThemeToggle />
+            <UserButton showName />
           </nav>
         </div>
       </header>

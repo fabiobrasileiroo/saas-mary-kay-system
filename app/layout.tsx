@@ -6,13 +6,15 @@ import "./globals.css"
 import { ThemeProvider } from "@/lib/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Mary Kay Manager",
   description: "Sistema de gerenciamento de produtos Mary Kay",
-    generator: 'v0.dev'
+  generator: 'fabio'
 }
 
 export default function RootLayout({
@@ -24,10 +26,20 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider defaultTheme="system">
-          <TooltipProvider>
-            {children}
-            <Toaster />
-          </TooltipProvider>
+          <ClerkProvider
+            appearance={{
+              baseTheme: dark,
+            }}
+          >
+            {/* Apply ScrollArea globally */}
+            <ScrollArea className="h-full w-full">
+              {/* {children} */}
+              <TooltipProvider>
+                {children}
+                <Toaster />
+              </TooltipProvider>
+            </ScrollArea>
+          </ClerkProvider>
         </ThemeProvider>
       </body>
     </html>
@@ -37,3 +49,4 @@ export default function RootLayout({
 
 
 import './globals.css'
+import { ScrollArea } from "@radix-ui/react-scroll-area"

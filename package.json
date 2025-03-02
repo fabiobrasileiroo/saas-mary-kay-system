@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.12.2",
+    "@clerk/themes": "^2.2.20",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.4",
@@ -37,6 +39,8 @@
     "@radix-ui/react-toggle": "^1.1.1",
     "@radix-ui/react-toggle-group": "^1.1.1",
     "@radix-ui/react-tooltip": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -56,12 +60,10 @@
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "vaul": "^0.9.6",
-    "zod": "^3.24.1",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
     "uuid": "latest",
-    "xlsx": "latest"
+    "vaul": "^0.9.6",
+    "xlsx": "latest",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^22",
