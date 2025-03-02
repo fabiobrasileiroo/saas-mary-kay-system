@@ -1,3 +1,5 @@
+import Head from "next/head"
+import { ScrollArea } from "@radix-ui/react-scroll-area"
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
@@ -14,7 +16,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Mary Kay Manager",
   description: "Sistema de gerenciamento de produtos Mary Kay",
-  generator: 'fabio'
+  generator: 'fabio',
 }
 
 export default function RootLayout({
@@ -24,6 +26,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      <Head>
+			<link rel='icon' href='/favicon.ico' />
+		</Head>
       <body className={inter.className}>
         <ThemeProvider defaultTheme="system">
           <ClerkProvider
@@ -49,4 +54,4 @@ export default function RootLayout({
 
 
 import './globals.css'
-import { ScrollArea } from "@radix-ui/react-scroll-area"
+
