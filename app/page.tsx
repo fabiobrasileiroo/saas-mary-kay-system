@@ -173,6 +173,7 @@ export default async function Home() {
                   </CardHeader>
                   <CardContent>
                     <RecentSales sales={sales} showAll />
+
                   </CardContent>
                 </Card>
               </TabsContent>
