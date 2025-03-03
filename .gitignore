@@ -40,3 +40,4 @@ jspm_packages
 /.clerk/
 # certificado bd
 ca-cert.pem
+.env
