@@ -14,7 +14,7 @@ import { dark } from "@clerk/themes"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Mary Kay Manager",
+  title: "Mary Kay Flow",
   description: "Sistema de gerenciamento de produtos Mary Kay",
   generator: "fabio",
   viewport: "width=device-width, initial-scale=1",
@@ -22,19 +22,19 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
   },
   alternates: {
-    canonical: "https://www.marykaymanager.com",
+    canonical: "https://saas-mary-kay-system.vercel.app",
   },
   openGraph: {
-    title: "Mary Kay Manager",
+    title: "Mary Kay flow",
     description: "Sistema de gerenciamento de produtos Mary Kay",
-    url: "https://www.marykaymanager.com",
-    siteName: "Mary Kay Manager",
+    url: "https://saas-mary-kay-system.vercel.app/bg-login.png",
+    siteName: "Mary Kay Flow",
     images: [
       {
-        url: "https://www.marykaymanager.com/og-image.jpg",
+        url: "https://saas-mary-kay-system.vercel.app/bg-login.png",
         width: 1200,
         height: 630,
-        alt: "Mary Kay Manager",
+        alt: "Mary Kay Flow",
       },
     ],
     locale: "pt_BR",
@@ -44,10 +44,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Mary Kay Manager",
     description: "Sistema de gerenciamento de produtos Mary Kay",
-    images: ["https://www.marykaymanager.com/og-image.jpg"],
-    site: "@marykaymanager",
+    images: ["https://saas-mary-kay-system.vercel.app/bg-login.png"],
+    site: "@marykayflow",
   },
-  metadataBase: new URL("https://www.marykaymanager.com"),
+  metadataBase: new URL("https://saas-mary-kay-system.vercel.app"),
 }
 
 export default function RootLayout({
