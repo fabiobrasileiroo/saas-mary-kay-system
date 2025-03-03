@@ -36,6 +36,7 @@ export default function NewProductPage() {
         sellingPrice: Number.parseFloat(formData.get("sellingPrice") as string),
         stock: Number.parseInt(formData.get("stock") as string),
         sku: formData.get("sku") as string,
+        userId: ''
       })
 
       router.push("/products")

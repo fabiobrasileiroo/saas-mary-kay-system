@@ -22,7 +22,12 @@ export default function NewSalePage() {
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [items, setItems] = useState<Array<{ productId: string; quantity: number; price: number }>>([])
+  const [items, setItems] = useState<Array<{
+    productId: string
+    quantity: number
+    price: number
+    productName: string
+  }>>([])
   const [total, setTotal] = useState(0)
   const [transportCost, setTransportCost] = useState(0)
   const [extraCosts, setExtraCosts] = useState(0)
@@ -37,18 +42,21 @@ export default function NewSalePage() {
         console.error("Erro ao carregar produtos:", error)
       }
     }
-
     loadProducts()
   }, [])
 
   useEffect(() => {
-    // Calcular o total da venda
     const newTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
     setTotal(newTotal)
   }, [items])
 
   function addItem() {
-    setItems([...items, { productId: "", quantity: 1, price: 0 }])
+    setItems([...items, {
+      productId: "",
+      quantity: 1,
+      price: 0,
+      productName: ""
+    }])
   }
 
   function removeItem(index: number) {
@@ -65,14 +73,15 @@ export default function NewSalePage() {
       if (product) {
         newItems[index] = {
           ...newItems[index],
-          [field]: value,
+          productId: value.toString(),
           price: product.sellingPrice,
+          productName: product.name
         }
       }
     } else {
       newItems[index] = {
         ...newItems[index],
-        [field]: value,
+        [field]: value
       }
     }
 
@@ -87,19 +96,21 @@ export default function NewSalePage() {
 
     try {
       await createSale({
+        
         customerName: formData.get("customerName") as string,
         customerPhone: formData.get("customerPhone") as string,
         paymentMethod: formData.get("paymentMethod") as string,
-        items: items.map((item) => ({
+        items: items.map(item => ({
           productId: item.productId,
           quantity: item.quantity,
           price: item.price,
+          productName: item.productName
         })),
         total: total,
         transportCost: transportCost,
         extraCosts: extraCosts,
         otherExpenses: otherExpenses,
-        date: new Date().toISOString(),
+        date: new Date(),
       })
 
       router.push("/sales")
@@ -110,6 +121,8 @@ export default function NewSalePage() {
       setIsLoading(false)
     }
   }
+
+
 
   return (
     <div className="container py-10">

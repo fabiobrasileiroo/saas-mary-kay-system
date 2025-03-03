@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { createContext, useContext, useEffect, useState } from "react"
 
 type Theme = "dark" | "light" | "system"
@@ -23,11 +22,22 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
+// Função para obter o tema salvo no cookie
+function getThemeFromCookie(): Theme | null {
+  const match = document.cookie.match(/(^| )theme=([^;]+)/)
+  return match ? (match[2] as Theme) : null
+}
+
+// Função para salvar o tema no cookie
+function setThemeInCookie(theme: Theme) {
+  document.cookie = `theme=${theme}; path=/; max-age=31536000` // Expira em 1 ano
+}
+
 export function ThemeProvider({ children, defaultTheme = "system" }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(defaultTheme)
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as Theme | null
+    const savedTheme = getThemeFromCookie()
 
     if (savedTheme) {
       setTheme(savedTheme)
@@ -49,15 +59,14 @@ export function ThemeProvider({ children, defaultTheme = "system" }: ThemeProvid
       root.classList.add(theme)
     }
 
-    localStorage.setItem("theme", theme)
+    setThemeInCookie(theme) // Salva no cookie
   }, [theme])
 
-  const value = {
-    theme,
-    setTheme,
-  }
-
-  return <ThemeProviderContext.Provider value={value}>{children}</ThemeProviderContext.Provider>
+  return (
+    <ThemeProviderContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeProviderContext.Provider>
+  )
 }
 
 export const useTheme = () => {
@@ -69,4 +78,3 @@ export const useTheme = () => {
 
   return context
 }
-

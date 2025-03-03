@@ -4,20 +4,25 @@ export interface SaleItem {
   quantity: number
   price: number
   productName: string
+  saleId: string
+  userId?: string | null
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface Sale {
   id: string
   customerName: string
-  customerPhone?: string
+  customerPhone?: string | null
   paymentMethod: string
   items: SaleItem[]
   total: number
   transportCost: number
-  extraCosts: number // Novo campo para custos extras (ex: combustível)
+  extraCosts: number
   otherExpenses: number
-  profit?: number
+  profit?: number | null
   date: string
+  userId?: string | null
   createdAt?: string
   updatedAt?: string
 }
@@ -31,7 +36,7 @@ export interface Product {
   sellingPrice: number
   stock: number
   sku: string
+  userId?: string | null
   createdAt?: string
   updatedAt?: string
 }
-

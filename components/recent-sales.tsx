@@ -1,42 +1,30 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { getSales } from "@/lib/actions"
-import type { Sale } from "@/lib/types"
+import type { Sale } from "@prisma/client"
 
 interface RecentSalesProps {
   showAll?: boolean
+  sales?: Sale[]
 }
 
-export function RecentSales({ showAll = false }: RecentSalesProps) {
-  const [sales, setSales] = useState<Sale[]>([])
+export function RecentSales({ showAll = false, sales = [] }: RecentSalesProps) {
+  // Ordenar vendas por data mais recente
+  const sortedSales = [...sales].sort((a, b) =>
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  )
 
-  useEffect(() => {
-    async function loadSales() {
-      try {
-        const data = await getSales()
-        setSales(data)
-      } catch (error) {
-        console.error("Erro ao carregar vendas:", error)
-      }
-    }
-
-    loadSales()
-  }, [])
-
-  // Mostrar apenas as 5 vendas mais recentes, a menos que showAll seja true
-  const displaySales = showAll ? sales : sales.slice(0, 5)
+  // Limitar a 5 itens se não for para mostrar todos
+  const displaySales = showAll ? sortedSales : sortedSales.slice(0, 5)
 
   return (
     <div className="space-y-8">
       {displaySales.map((sale) => (
         <div key={sale.id} className="flex items-center">
           <Avatar className="h-9 w-9">
-            <AvatarFallback className="bg-pink-100 text-pink-800">
+            <AvatarFallback>
               {sale.customerName
                 .split(" ")
                 .map((name) => name[0])
@@ -51,10 +39,19 @@ export function RecentSales({ showAll = false }: RecentSalesProps) {
               {format(new Date(sale.date), "dd/MM/yyyy", { locale: ptBR })}
             </p>
           </div>
-          <div className="ml-auto font-medium">R$ {sale.total.toFixed(2)}</div>
+          <div className="ml-auto font-medium">
+            {sale.total.toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL'
+            })}
+          </div>
         </div>
       ))}
+      {displaySales.length === 0 && (
+        <div className="text-center py-4 text-muted-foreground">
+          Nenhuma venda registrada
+        </div>
+      )}
     </div>
   )
 }
-

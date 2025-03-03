@@ -1,43 +1,116 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-
-import { getSalesData } from "@/lib/actions"
+import { getSales } from "@/lib/actions"
+import { useEffect, useState } from "react"
+import type { Sale } from "@/lib/types"
 
 interface SalesChartProps {
   showProfit?: boolean
+  data?: Array<{
+    name: string
+    vendas: number
+    lucro?: number
+    custos_extras?: number
+    outras_despesas?: number
+  }> | Array<{
+    month: string
+    total: number
+  }>
+  sales?: Sale[]
 }
 
-export function SalesChart({ showProfit = false }: SalesChartProps) {
-  const [data, setData] = useState<any[]>([])
+export function SalesChart({ showProfit = false, data, sales }: SalesChartProps) {
+  // Estado local para os dados formatados
+  const [localData, setLocalData] = useState<any[]>([])
+
+  // Function to normalize data to the expected format
+  const normalizeData = (inputData: any[]) => {
+    return inputData.map(item => {
+      // Check if data is already in the expected format
+      if ('vendas' in item) {
+        return item;
+      }
+      
+      // Convert from { month, total } format to expected format
+      if ('month' in item && 'total' in item) {
+        return {
+          name: item.month,
+          vendas: item.total,
+          lucro: 0, // Default values
+          custos_extras: 0,
+          outras_despesas: 0
+        };
+      }
+      
+      // Unknown format, return empty structure
+      return {
+        name: 'Unknown',
+        vendas: 0,
+        lucro: 0,
+        custos_extras: 0,
+        outras_despesas: 0
+      };
+    });
+  };
 
   useEffect(() => {
     async function loadData() {
       try {
-        const salesData = await getSalesData()
-        setData(salesData)
+        // Use provided data if available
+        if (data && data.length > 0) {
+          setLocalData(normalizeData(data));
+          return;
+        }
+        
+        // Se sales foi fornecido via props, use-o
+        const salesData = sales || await getSales()
+        
+        // Agrupar vendas por mês para o gráfico
+        const salesByMonth = salesData.reduce<Record<string, any>>((acc, sale) => {
+          const month = new Date(sale.date).toLocaleDateString('pt-BR', { month: 'short' })
+          
+          if (!acc[month]) {
+            acc[month] = {
+              name: month,
+              vendas: 0,
+              lucro: 0,
+              custos_extras: 0,
+              outras_despesas: 0
+            }
+          }
+          
+          acc[month].vendas += sale.total
+          acc[month].lucro += sale.profit || 0
+          acc[month].custos_extras += sale.extraCosts
+          acc[month].outras_despesas += sale.otherExpenses
+          
+          return acc
+        }, {})
+        
+        // Converter para array
+        const formattedData = Object.values(salesByMonth)
+        
+        setLocalData(formattedData)
       } catch (error) {
         console.error("Erro ao carregar dados de vendas:", error)
-        // Dados de exemplo para visualização
-        setData([
+        // Fallback para dados estáticos
+        setLocalData([
           { name: "Jan", vendas: 4000, lucro: 2400, custos_extras: 200, outras_despesas: 100 },
           { name: "Fev", vendas: 3000, lucro: 1398, custos_extras: 150, outras_despesas: 80 },
-          { name: "Mar", vendas: 2000, lucro: 9800, custos_extras: 180, outras_despesas: 90 },
-          { name: "Abr", vendas: 2780, lucro: 3908, custos_extras: 220, outras_despesas: 110 },
-          { name: "Mai", vendas: 1890, lucro: 4800, custos_extras: 170, outras_despesas: 85 },
-          { name: "Jun", vendas: 2390, lucro: 3800, custos_extras: 190, outras_despesas: 95 },
-          { name: "Jul", vendas: 3490, lucro: 4300, custos_extras: 210, outras_despesas: 105 },
         ])
       }
     }
-
+    
     loadData()
-  }, [])
+  }, [data, sales])
+
+  // Use the normalized data for the chart
+  const chartData = localData;
 
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={data}>
+      <BarChart data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
@@ -51,4 +124,3 @@ export function SalesChart({ showProfit = false }: SalesChartProps) {
     </ResponsiveContainer>
   )
 }
-

@@ -1,18 +1,15 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { ArrowLeft, Trash } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,35 +20,43 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { getProduct, updateProduct, deleteProduct } from "@/lib/actions"
-import type { Product } from "@/lib/types"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { TooltipTerm } from "@/components/tooltip-term"
+} from "@/components/ui/alert-dialog";
+import { getProduct, updateProduct, deleteProduct } from "@/lib/actions";
+import { Product } from "@/lib/types";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { TooltipTerm } from "@/components/tooltip-term";
 
 export default function ProductPage({ params }: { params: { id: string } }) {
-  const router = useRouter()
-  const [product, setProduct] = useState<Product | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  console.log("🚀 ~ ProductPage ~ params:", params)
+  const router = useRouter();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    async function loadProduct() {
+    const loadProduct = async () => {
       try {
-        const data = await getProduct(params.id)
-        setProduct(data)
+        const data = await getProduct(params.id);
+        console.log("🚀 ~ loadProduct ~ data:", data)
+        if (data) {
+          setProduct({
+            ...data,
+            createdAt: data.createdAt.toISOString(),
+            updatedAt: data.updatedAt.toISOString(),
+          });
+        }
       } catch (error) {
-        console.error("Erro ao carregar produto:", error)
+        console.error("Erro ao carregar produto:", error);
       }
-    }
+    };
 
-    loadProduct()
-  }, [params.id])
+    loadProduct();
+  }, [params.id]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setIsLoading(true)
+    event.preventDefault();
+    setIsLoading(true);
 
-    const formData = new FormData(event.currentTarget)
+    const formData = new FormData(event.currentTarget);
 
     try {
       await updateProduct(params.id, {
@@ -62,29 +67,29 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         sellingPrice: Number.parseFloat(formData.get("sellingPrice") as string),
         stock: Number.parseInt(formData.get("stock") as string),
         sku: formData.get("sku") as string,
-      })
+      });
 
-      router.push("/products")
-      router.refresh()
+      router.push("/products");
+      router.refresh();
     } catch (error) {
-      console.error("Erro ao atualizar produto:", error)
+      console.error("Erro ao atualizar produto:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   async function handleDelete() {
     try {
-      await deleteProduct(params.id)
-      router.push("/products")
-      router.refresh()
+      await deleteProduct(params.id);
+      router.push("/products");
+      router.refresh();
     } catch (error) {
-      console.error("Erro ao excluir produto:", error)
+      console.error("Erro ao excluir produto:", error);
     }
   }
 
   if (!product) {
-    return <div className="container py-10">Carregando...</div>
+    return <div className="container py-10">Carregando...</div>;
   }
 
   return (
@@ -111,8 +116,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               <AlertDialogHeader>
                 <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Esta ação não pode ser desfeita. Isso excluirá permanentemente o produto "{product.name}" e removerá
-                  seus dados do sistema.
+                  Esta ação não pode ser desfeita. Isso excluirá permanentemente o produto "{product.name}" e
+                  removerá seus dados do sistema.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -218,6 +223,5 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

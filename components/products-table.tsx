@@ -3,47 +3,36 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Edit, Search } from "lucide-react"
+import { Product } from "@prisma/client"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getProducts } from "@/lib/actions"
-import type { Product } from "@/lib/types"
 import { TooltipTerm } from "@/components/tooltip-term"
 
-export function ProductsTable() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+interface ProductsTableProps {
+  products: Product[]
+}
+
+export function ProductsTable({ products }: ProductsTableProps) {
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products)
   const [searchTerm, setSearchTerm] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState("")
+  const [categoryFilter, setCategoryFilter] = useState("all")
 
+  // Atualiza a lista filtrada quando os produtos ou filtros mudam
   useEffect(() => {
-    async function loadProducts() {
-      try {
-        const data = await getProducts()
-        setProducts(data)
-        setFilteredProducts(data)
-      } catch (error) {
-        console.error("Erro ao carregar produtos:", error)
-      }
-    }
-
-    loadProducts()
-  }, [])
-
-  useEffect(() => {
-    let result = products
+    let result = [...products]
 
     if (searchTerm) {
       result = result.filter(
         (product) =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.sku.toLowerCase().includes(searchTerm.toLowerCase()),
+          product.sku.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
-    if (categoryFilter) {
+    if (categoryFilter && categoryFilter !== "all") {
       result = result.filter((product) => product.category === categoryFilter)
     }
 
@@ -59,6 +48,11 @@ export function ProductsTable() {
       accessories: "Acessórios",
     }
     return categories[category] || category
+  }
+
+  function calculateMargin(costPrice: number, sellingPrice: number) {
+    if (sellingPrice === 0) return 0
+    return ((sellingPrice - costPrice) / sellingPrice) * 100
   }
 
   return (
@@ -127,10 +121,20 @@ export function ProductsTable() {
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{getCategoryLabel(product.category)}</TableCell>
                   <TableCell>{product.sku}</TableCell>
-                  <TableCell className="text-right">R$ {product.costPrice.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">R$ {product.sellingPrice.toFixed(2)}</TableCell>
                   <TableCell className="text-right">
-                    {(((product.sellingPrice - product.costPrice) / product.sellingPrice) * 100).toFixed(0)}%
+                    {product.costPrice.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL'
+                    })}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {product.sellingPrice.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL'
+                    })}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {calculateMargin(product.costPrice, product.sellingPrice).toFixed(1)}%
                   </TableCell>
                   <TableCell className="text-right">{product.stock}</TableCell>
                   <TableCell className="text-right">
@@ -150,4 +154,3 @@ export function ProductsTable() {
     </div>
   )
 }
-

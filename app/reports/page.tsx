@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { CalendarIcon, Download } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
@@ -17,18 +17,51 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { TooltipTerm } from "@/components/tooltip-term"
 import { BackButton } from "@/components/back-button"
 import { exportToExcel } from "@/lib/excel-export"
+import { getSales, getProducts, getFinancialMetrics } from "@/lib/actions"
+import type { Sale, Product } from "@/lib/types"
 
 export default function ReportsPage() {
   const [date, setDate] = useState<Date | undefined>(new Date())
+  const [sales, setSales] = useState<Sale[]>([])
+  const [products, setProducts] = useState<Product[]>([])
+  const [metrics, setMetrics] = useState({
+    totalSales: 0,
+    netProfit: 0,
+    totalExpenses: 0,
+    averageTicket: 0
+  })
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [salesData, productsData, metricsData] = await Promise.all([
+          getSales(),
+          getProducts(),
+          getFinancialMetrics()
+        ])
+        
+        setSales(salesData)
+        setProducts(productsData)
+        setMetrics(metricsData)
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error)
+      }
+    }
+    
+    loadData()
+  }, [date])
 
   const handleExportReport = () => {
-    // Aqui você deve gerar os dados do relatório
-    // Este é apenas um exemplo, você deve substituir isso com dados reais
-    const reportData = [
-      { data: "2023-01-01", vendas: 1000, lucro: 300 },
-      { data: "2023-01-02", vendas: 1200, lucro: 350 },
-      { data: "2023-01-03", vendas: 800, lucro: 200 },
-    ]
+    const reportData = sales.map(sale => ({
+      Data: format(new Date(sale.date), "dd/MM/yyyy"),
+      Cliente: sale.customerName,
+      "Forma Pagamento": sale.paymentMethod,
+      Total: sale.total,
+      Transporte: sale.transportCost,
+      "Custos Extras": sale.extraCosts,
+      "Outras Despesas": sale.otherExpenses,
+      Lucro: sale.profit
+    }))
 
     exportToExcel(reportData, `Relatorio_${format(date || new Date(), "yyyy-MM-dd")}`)
   }
@@ -58,7 +91,6 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Rest of the page content... */}
       <div className="grid gap-6">
         <Card>
           <CardHeader>
@@ -68,7 +100,12 @@ export default function ReportsPage() {
             <CardDescription>Visão geral das métricas financeiras do período selecionado</CardDescription>
           </CardHeader>
           <CardContent>
-            <FinancialMetrics />
+            <FinancialMetrics 
+              // totalSales={metrics.totalSales}
+              // netProfit={metrics.netProfit}
+              // totalExpenses={metrics.totalExpenses}
+              // averageTicket={metrics.averageTicket}
+            />
           </CardContent>
         </Card>
 
@@ -78,6 +115,7 @@ export default function ReportsPage() {
             <TabsTrigger value="products">Produtos</TabsTrigger>
             <TabsTrigger value="profit">Lucratividade</TabsTrigger>
           </TabsList>
+          
           <TabsContent value="sales" className="space-y-4">
             <Card>
               <CardHeader>
@@ -85,10 +123,11 @@ export default function ReportsPage() {
                 <CardDescription>Análise de vendas ao longo do tempo</CardDescription>
               </CardHeader>
               <CardContent className="h-[400px]">
-                <SalesChart />
+                <SalesChart sales={sales} />
               </CardContent>
             </Card>
           </TabsContent>
+
           <TabsContent value="products" className="space-y-4">
             <Card>
               <CardHeader>
@@ -96,10 +135,11 @@ export default function ReportsPage() {
                 <CardDescription>Top produtos por volume de vendas</CardDescription>
               </CardHeader>
               <CardContent className="h-[400px]">
-                <ProductsChart />
+                <ProductsChart products={products} />
               </CardContent>
             </Card>
           </TabsContent>
+
           <TabsContent value="profit" className="space-y-4">
             <Card>
               <CardHeader>
@@ -107,7 +147,7 @@ export default function ReportsPage() {
                 <CardDescription>Comparação entre receita bruta e lucro líquido</CardDescription>
               </CardHeader>
               <CardContent className="h-[400px]">
-                <SalesChart showProfit />
+                <SalesChart sales={sales} showProfit />
               </CardContent>
             </Card>
           </TabsContent>
@@ -116,4 +156,3 @@ export default function ReportsPage() {
     </div>
   )
 }
-
