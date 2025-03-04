@@ -137,7 +137,7 @@ export default async function Home() {
                       <SalesChart  sales={sales} data={chartData} />
                     </CardContent>
                   </Card>
-                  <Card className="col-span-3">
+                  <Card className="col-span-4 md:col-span-3 ">
                     <CardHeader>
                       <CardTitle>Vendas Recentes</CardTitle>
                       <CardDescription>
@@ -151,7 +151,7 @@ export default async function Home() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="products" className="space-y-4">
+              <TabsContent value="products" className="space-y-4 max-md:grid max-md:grid-cols-1">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Produtos</CardTitle>
