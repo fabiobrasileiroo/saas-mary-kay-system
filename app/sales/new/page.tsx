@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Plus, Trash } from "lucide-react"
-import { ThemeToggle } from "@/components/theme-toggle"
+// import { ThemeToggle } from "@/components/theme-toggle"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -135,7 +135,7 @@ export default function NewSalePage() {
           </Link>
           <h1 className="text-3xl font-bold">Nova Venda</h1>
         </div>
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
       </div>
 
       <Card className="max-w-3xl mx-auto">

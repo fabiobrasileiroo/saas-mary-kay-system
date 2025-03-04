@@ -1,9 +1,10 @@
 "use server";
 
+import { prisma } from '@/lib/prisma'
 import { auth } from "@clerk/nextjs/server";
 import { PrismaClient, Product, Sale, SaleItem } from "@prisma/client";
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 // Funções CRUD para produtos
 // types.ts
@@ -27,7 +28,7 @@ export async function getProducts() {
   const products = await prisma.product.findMany({
     where: { userId }
   });
-  
+
   return products.map(product => ({
     ...product,
     createdAt: product.createdAt.toISOString(),
@@ -36,7 +37,7 @@ export async function getProducts() {
 }
 export async function getProduct(id: string) {
   const { userId } = await auth();
-  return await prisma.product.findUnique({ where: { id ,userId} });
+  return await prisma.product.findUnique({ where: { id, userId } });
 }
 
 export async function createProduct(data: Omit<Product, "id" | "createdAt" | "updatedAt">) {
@@ -119,13 +120,13 @@ export async function getSale(id: string) {
   });
 }
 
-export async function createSale(data: Omit<Sale, "id" | "createdAt" | "updatedAt" | "profit" | 'userId'> & { 
-  items: { 
+export async function createSale(data: Omit<Sale, "id" | "createdAt" | "updatedAt" | "profit" | 'userId'> & {
+  items: {
     productId: string
     quantity: number
     price: number
     productName: string
-  }[] 
+  }[]
 }) {
   const { userId } = await auth();
   if (!userId) throw new Error("User not authenticated");
@@ -135,14 +136,14 @@ export async function createSale(data: Omit<Sale, "id" | "createdAt" | "updatedA
 
     const items = await Promise.all(
       data.items.map(async (item) => {
-        const product = await prisma.product.findUnique({ 
-          where: { id: item.productId } 
+        const product = await prisma.product.findUnique({
+          where: { id: item.productId }
         });
         if (!product) throw new Error("Produto não encontrado");
 
         await prisma.product.update({
           where: { id: item.productId },
-          data: { stock: { decrement: item.quantity },updatedAt: new Date() },
+          data: { stock: { decrement: item.quantity }, updatedAt: new Date() },
         });
 
         const itemProfit = (item.price - product.costPrice) * item.quantity;
@@ -213,11 +214,11 @@ export async function getTopProducts() {
   try {
     // Get the current date
     const now = new Date();
-    
+
     // Set the date to 30 days ago for the default timeframe
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(now.getDate() - 30);
-    
+
     // Query to get the top selling products
     const topProducts = await prisma.saleItem.groupBy({
       by: ['productId'],
@@ -238,7 +239,7 @@ export async function getTopProducts() {
         const product = await prisma.product.findUnique({
           where: { id: item.productId },
         });
-        
+
         return {
           name: product?.name || "Produto desconhecido",
           value: item._sum.quantity || 0,

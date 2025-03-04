@@ -59,7 +59,7 @@ export default function NewProductPage() {
           </Link>
           <h1 className="text-3xl font-bold">Novo Produto</h1>
         </div>
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
       </div>
 
       <Card className="max-w-2xl mx-auto">

@@ -13,12 +13,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { SalesChart } from "@/components/sales-chart"
 import { ProductsChart } from "@/components/products-chart"
 import { FinancialMetrics } from "@/components/financial-metrics"
-import { ThemeToggle } from "@/components/theme-toggle"
+// import { ThemeToggle } from "@/components/theme-toggle"
 import { TooltipTerm } from "@/components/tooltip-term"
 import { BackButton } from "@/components/back-button"
 import { exportToExcel } from "@/lib/excel-export"
 import { getSales, getProducts, getFinancialMetrics } from "@/lib/actions"
 import type { Sale, Product } from "@/lib/types"
+import { Header } from "@/components/Header/header"
 
 export default function ReportsPage() {
   const [date, setDate] = useState<Date | undefined>(new Date())
@@ -39,7 +40,7 @@ export default function ReportsPage() {
           getProducts(),
           getFinancialMetrics()
         ])
-        
+
         setSales(salesData)
         setProducts(productsData)
         setMetrics(metricsData)
@@ -47,7 +48,7 @@ export default function ReportsPage() {
         console.error("Erro ao carregar dados:", error)
       }
     }
-    
+
     loadData()
   }, [date])
 
@@ -67,91 +68,89 @@ export default function ReportsPage() {
   }
 
   return (
-    <div className="container py-10">
-      <BackButton href="/" />
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Relatórios</h1>
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-[240px] justify-start text-left font-normal">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date ? format(date, "MMMM yyyy", { locale: ptBR }) : "Selecione um mês"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
-            </PopoverContent>
-          </Popover>
-          <Button onClick={handleExportReport}>
-            <Download className="mr-2 h-4 w-4" />
-            Exportar Relatório
-          </Button>
+    <div>
+      {/* <Header /> */}
+      <div className="container py-10">
+        <BackButton href="/" />
+        <div className="flex max-md:flex-col max-md:gap-4 items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">Relatórios</h1>
+          <div className="flex max-sm:flex-col max-md:gap-2  items-center gap-4">
+            {/* <ThemeToggle /> */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-[240px] justify-start text-left font-normal">
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "MMMM yyyy", { locale: ptBR }) : "Selecione um mês"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
+              </PopoverContent>
+            </Popover>
+            <Button onClick={handleExportReport}>
+              <Download className="mr-2 h-4 w-4" />
+              Exportar Relatório
+            </Button>
+          </div>
         </div>
-      </div>
 
-      <div className="grid gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <TooltipTerm term="Fluxo de Caixa">Métricas Financeiras</TooltipTerm>
-            </CardTitle>
-            <CardDescription>Visão geral das métricas financeiras do período selecionado</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FinancialMetrics 
-              // totalSales={metrics.totalSales}
-              // netProfit={metrics.netProfit}
-              // totalExpenses={metrics.totalExpenses}
-              // averageTicket={metrics.averageTicket}
-            />
-          </CardContent>
-        </Card>
+        <div className="grid gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                <TooltipTerm term="Fluxo de Caixa">Métricas Financeiras</TooltipTerm>
+              </CardTitle>
+              <CardDescription>Visão geral das métricas financeiras do período selecionado</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FinancialMetrics />
+            </CardContent>
+          </Card>
 
-        <Tabs defaultValue="sales" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="sales">Vendas</TabsTrigger>
-            <TabsTrigger value="products">Produtos</TabsTrigger>
-            <TabsTrigger value="profit">Lucratividade</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="sales" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Vendas por Período</CardTitle>
-                <CardDescription>Análise de vendas ao longo do tempo</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[400px]">
-                <SalesChart sales={sales} />
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <Tabs defaultValue="sales" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="sales">Vendas</TabsTrigger>
+              <TabsTrigger value="products">Produtos</TabsTrigger>
+              <TabsTrigger value="profit">Lucratividade</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="products" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Produtos Mais Vendidos</CardTitle>
-                <CardDescription>Top produtos por volume de vendas</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[400px]">
-                <ProductsChart products={products} />
-              </CardContent>
-            </Card>
-          </TabsContent>
+            <TabsContent value="sales" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vendas por Período</CardTitle>
+                  <CardDescription>Análise de vendas ao longo do tempo</CardDescription>
+                </CardHeader>
+                <CardContent className="h-[400px]">
+                  <SalesChart sales={sales} />
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-          <TabsContent value="profit" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Análise de Lucratividade</CardTitle>
-                <CardDescription>Comparação entre receita bruta e lucro líquido</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[400px]">
-                <SalesChart sales={sales} showProfit />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="products" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Produtos Mais Vendidos</CardTitle>
+                  <CardDescription>Top produtos por volume de vendas</CardDescription>
+                </CardHeader>
+                <CardContent className="h-[400px]">
+                  <ProductsChart products={products} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="profit" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Análise de Lucratividade</CardTitle>
+                  <CardDescription>Comparação entre receita bruta e lucro líquido</CardDescription>
+                </CardHeader>
+                <CardContent className="h-[400px]">
+                  <SalesChart sales={sales} showProfit />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   )

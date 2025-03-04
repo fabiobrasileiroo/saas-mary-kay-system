@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ClerkProvider } from "@clerk/nextjs"
 import { dark } from "@clerk/themes"
+import { Header } from "@/components/Header/header"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -61,6 +62,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <body className={inter.className}>
+        {/* <Header /> */}
         <ThemeProvider defaultTheme="system">
           <ClerkProvider appearance={{ baseTheme: dark }}>
             <ScrollArea className="h-full w-full">
