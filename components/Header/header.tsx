@@ -52,6 +52,7 @@ export const Header = () => {
               <Link href="/products" onClick={() => setIsOpen(false)}>Produtos</Link>
               <Link href="/sales" onClick={() => setIsOpen(false)}>Vendas</Link>
               <Link href="/reports" onClick={() => setIsOpen(false)}>Relatórios</Link>
+              <ThemeToggle />
             </SheetContent>
           </Sheet>
           <UserButton afterSignOutUrl="/" showName />
