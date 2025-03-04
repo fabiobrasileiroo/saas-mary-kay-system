@@ -55,7 +55,7 @@ export const Header = () => {
               <ThemeToggle />
             </SheetContent>
           </Sheet>
-          <UserButton afterSignOutUrl="/" showName />
+          <UserButton afterSignOutUrl="/" />
         </div>
       </div>
     </header>
