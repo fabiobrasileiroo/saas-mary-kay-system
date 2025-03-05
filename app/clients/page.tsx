@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "@/components/ui/use-toast"
 
 import { getClients, createClient, updateClient, deleteClient } from "@/lib/actions"
+import { BackButton } from "@/components/back-button"
 
 const clientSchema = z.object({
   customerName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -107,6 +108,7 @@ export default function ClientsPage() {
 
   return (
     <div className="mx-auto container max-md:px-2 max-lg:px-4 py-5 md:py-10 ">
+      <BackButton href="/"/>
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>{currentClient ? "Editar Cliente" : "Novo Cliente"}</CardTitle>
