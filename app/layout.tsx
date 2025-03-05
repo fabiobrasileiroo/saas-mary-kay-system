@@ -13,6 +13,7 @@ import { dark } from "@clerk/themes"
 import { Header } from "@/components/Header/header"
 
 const inter = Inter({ subsets: ["latin"] })
+const baseUrl = "https://mary-kay-flow.vercel.app"
 
 export const metadata: Metadata = {
   title: "Mary Kay Flow",
@@ -23,16 +24,16 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
   },
   alternates: {
-    canonical: "https://saas-mary-kay-system.vercel.app",
+    canonical: baseUrl,
   },
   openGraph: {
     title: "Mary Kay flow",
     description: "Sistema de gerenciamento de produtos Mary Kay",
-    url: "https://saas-mary-kay-system.vercel.app/bg-login.png",
+    url: `${baseUrl}/bg-login.png`,
     siteName: "Mary Kay Flow",
     images: [
       {
-        url: "https://saas-mary-kay-system.vercel.app/bg-login.png",
+        url: `${baseUrl}/bg-login.png`,
         width: 1200,
         height: 630,
         alt: "Mary Kay Flow",
@@ -45,10 +46,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Mary Kay Manager",
     description: "Sistema de gerenciamento de produtos Mary Kay",
-    images: ["https://saas-mary-kay-system.vercel.app/bg-login.png"],
+    images: [`${baseUrl}/bg-login.png`],
     site: "@marykayflow",
   },
-  metadataBase: new URL("https://saas-mary-kay-system.vercel.app"),
+  metadataBase: new URL(baseUrl),
 }
 
 
