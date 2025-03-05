@@ -343,7 +343,7 @@ export default async function Home() {
       <Header />
 
       <main className="flex-1">
-        <div className="container py-6">
+        <div className="container max-md:px-2 max-lg:px-4 py-3 md:py-6">
           <div className="grid gap-6">
             <Suspense fallback={<DashboardSkeleton />}>
               {isLoading ? <DashboardSkeleton /> : <DashboardContent sales={sales} products={products} />}
