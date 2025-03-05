@@ -1,6 +1,6 @@
 "use client"
 
-import type { ReactNode } from "react"
+import { useState, useEffect, type ReactNode } from "react"
 import { HelpCircle } from "lucide-react"
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -31,11 +31,36 @@ const termDefinitions: Record<string, string> = {
 
 export function TooltipTerm({ term, children }: TooltipTermProps) {
   const definition = termDefinitions[term] || "Definição não disponível"
+  const [open, setOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect mobile devices
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.matchMedia("(max-width: 768px)").matches)
+    }
+
+    // Check on initial load
+    checkIfMobile()
+
+    // Add event listener for window resize
+    window.addEventListener("resize", checkIfMobile)
+
+    // Cleanup
+    return () => window.removeEventListener("resize", checkIfMobile)
+  }, [])
+
+  // Handle click for mobile devices
+  const handleClick = () => {
+    if (isMobile) {
+      setOpen(!open)
+    }
+  }
 
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={300}>
-        <TooltipTrigger asChild>
+      <Tooltip delayDuration={300} open={isMobile ? open : undefined} onOpenChange={isMobile ? setOpen : undefined}>
+        <TooltipTrigger asChild onClick={handleClick}>
           <span className="inline-flex items-center cursor-help border-b border-dotted border-muted-foreground">
             {children}
             <HelpCircle className="ml-1 h-3 w-3 text-muted-foreground" />
