@@ -125,7 +125,7 @@ export default function NewSalePage() {
 
 
   return (
-    <div className="container py-10">
+    <div className="container max-md:px-2 max-lg:px-4 py-5 md:py-10">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
           <Link href="/sales">
