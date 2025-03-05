@@ -1,7 +1,5 @@
 "use client"
 
-import { TableHeader } from "@/components/ui/table"
-
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Eye, Search } from "lucide-react"
@@ -10,26 +8,32 @@ import { ptBR } from "date-fns/locale"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 import { getSales } from "@/lib/actions"
 import type { Sale } from "@/lib/types"
 import { TooltipTerm } from "@/components/tooltip-term"
+import { formatCurrency } from "@/lib/numberRealFormatado"
 
 export function SalesTable() {
   const [sales, setSales] = useState<Sale[]>([])
   const [filteredSales, setFilteredSales] = useState<Sale[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [paymentFilter, setPaymentFilter] = useState("")
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadSales() {
+      setLoading(true)
       try {
         const data = await getSales()
         setSales(data)
         setFilteredSales(data)
       } catch (error) {
         console.error("Erro ao carregar vendas:", error)
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -43,7 +47,7 @@ export function SalesTable() {
       result = result.filter((sale) => sale.customerName.toLowerCase().includes(searchTerm.toLowerCase()))
     }
 
-    if (paymentFilter) {
+    if (paymentFilter && paymentFilter !== "all") {
       result = result.filter((sale) => sale.paymentMethod === paymentFilter)
     }
 
@@ -115,7 +119,43 @@ export function SalesTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredSales.length === 0 ? (
+            {loading ? (
+              // Skeleton loading state
+              Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={`skeleton-${index}`}>
+                  <TableCell>
+                    <Skeleton className="h-5 w-20" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-32 " />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-28" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-10" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-5 w-16 ml-auto" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-5 w-16 ml-auto" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-5 w-16 ml-auto" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-5 w-16 ml-auto" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-5 w-16 ml-auto" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-8 w-8 rounded-full ml-auto" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : filteredSales.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={10} className="h-24 text-center">
                   Nenhuma venda encontrada.
@@ -127,12 +167,12 @@ export function SalesTable() {
                   <TableCell>{format(new Date(sale.date), "dd/MM/yyyy", { locale: ptBR })}</TableCell>
                   <TableCell className="font-medium">{sale.customerName}</TableCell>
                   <TableCell>{getPaymentMethodLabel(sale.paymentMethod)}</TableCell>
-                  <TableCell>{sale.items.length} itens</TableCell>
-                  <TableCell className="text-right">R$ {sale.total.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">R$ {sale.transportCost.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">R$ {sale.extraCosts.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">R$ {sale.otherExpenses.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">R$ {(sale.profit || 0).toFixed(2)}</TableCell>
+                  <TableCell>{sale.items.length}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(sale.total)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(sale.transportCost)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(sale.extraCosts)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(sale.otherExpenses)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(sale.profit || 0)}</TableCell>
                   <TableCell className="text-right">
                     <Link href={`/sales/${sale.id}`}>
                       <Button variant="ghost" size="icon">

@@ -5,7 +5,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 
-import { ThemeProvider } from "@/lib/theme-provider"
+import { ThemeProvider, useTheme } from "@/lib/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ClerkProvider } from "@clerk/nextjs"
@@ -51,6 +51,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://saas-mary-kay-system.vercel.app"),
 }
 
+
 export default function RootLayout({
   children,
 }: {
@@ -64,7 +65,7 @@ export default function RootLayout({
       <body className={inter.className}>
         {/* <Header /> */}
         <ThemeProvider defaultTheme="system">
-          <ClerkProvider appearance={{ baseTheme: dark }}>
+          <ClerkProvider appearance={{ baseTheme:  dark }}>
             <ScrollArea className="h-full w-full">
               <TooltipProvider>
                 {children}

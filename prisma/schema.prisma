@@ -7,7 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
+model Client {
+  id            String     @id @default(uuid())
+  userId        String?
+  customerName  String
+  customerPhone String?
+  description   String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  sales         SaleItem[]
+}
 
 model Product {
   id           String     @id @default(uuid())
@@ -22,7 +31,6 @@ model Product {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   sales        SaleItem[]
-
 }
 
 model Sale {
@@ -40,21 +48,21 @@ model Sale {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   items         SaleItem[]
-
 }
 
 model SaleItem {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   userId      String?
   saleId      String
-  sale        Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  sale        Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
   productId   String
-  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity    Int
   price       Float
   productName String
   createdAt   DateTime @default(now()) // Adicionado
-  updatedAt   DateTime @updatedAt      // Adicionado
+  updatedAt   DateTime @updatedAt // Adicionado
 
-
+  Client   Client? @relation(fields: [clientId], references: [id])
+  clientId String?
 }

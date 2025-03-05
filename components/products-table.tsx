@@ -3,13 +3,16 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Edit, Search } from "lucide-react"
-import { Product } from "@prisma/client"
+import type { Product } from "@prisma/client"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TooltipTerm } from "@/components/tooltip-term"
+import { Skeleton } from "@/components/ui/skeleton"
+import { formatDate } from "@/lib/dateFormatdo"
+import { formatCurrency } from "@/lib/numberRealFormatado"
 
 interface ProductsTableProps {
   products: Product[]
@@ -19,8 +22,18 @@ export function ProductsTable({ products }: ProductsTableProps) {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products)
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("all")
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Atualiza a lista filtrada quando os produtos ou filtros mudam
+  useEffect(() => {
+    // Simulate loading
+    setIsLoading(true)
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
   useEffect(() => {
     let result = [...products]
 
@@ -28,7 +41,7 @@ export function ProductsTable({ products }: ProductsTableProps) {
       result = result.filter(
         (product) =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.sku.toLowerCase().includes(searchTerm.toLowerCase())
+          product.sku.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     }
 
@@ -53,6 +66,47 @@ export function ProductsTable({ products }: ProductsTableProps) {
   function calculateMargin(costPrice: number, sellingPrice: number) {
     if (sellingPrice === 0) return 0
     return ((sellingPrice - costPrice) / sellingPrice) * 100
+  }
+
+  function ProductTableSkeleton() {
+    return (
+      <>
+        {Array.from({ length: 5 }).map((_, index) => (
+          <TableRow key={index}>
+            <TableCell>
+              <Skeleton className="h-4 w-[150px]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[100px]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[80px]" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-[80px] ml-auto" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-[80px] ml-auto" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-[60px] ml-auto" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-[40px] ml-auto" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-[120px] ml-auto" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-[120px] ml-auto" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-8 w-8 rounded-full ml-auto" />
+            </TableCell>
+          </TableRow>
+        ))}
+      </>
+    )
   }
 
   return (
@@ -105,13 +159,17 @@ export function ProductsTable({ products }: ProductsTableProps) {
               <TableHead className="text-right">
                 <TooltipTerm term="Estoque">Estoque</TooltipTerm>
               </TableHead>
+              <TableHead className="text-right">Data de Criação</TableHead>
+              <TableHead className="text-right">Data de atualização</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProducts.length === 0 ? (
+            {isLoading ? (
+              <ProductTableSkeleton />
+            ) : filteredProducts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
+                <TableCell colSpan={10} className="h-24 text-center">
                   Nenhum produto encontrado.
                 </TableCell>
               </TableRow>
@@ -121,22 +179,14 @@ export function ProductsTable({ products }: ProductsTableProps) {
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{getCategoryLabel(product.category)}</TableCell>
                   <TableCell>{product.sku}</TableCell>
-                  <TableCell className="text-right">
-                    {product.costPrice.toLocaleString('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL'
-                    })}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {product.sellingPrice.toLocaleString('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL'
-                    })}
-                  </TableCell>
+                  <TableCell className="text-right">{formatCurrency(product.costPrice)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(product.sellingPrice)}</TableCell>
                   <TableCell className="text-right">
                     {calculateMargin(product.costPrice, product.sellingPrice).toFixed(1)}%
                   </TableCell>
                   <TableCell className="text-right">{product.stock}</TableCell>
+                  <TableCell className="text-right">{formatDate(product.createdAt, "full")}</TableCell>
+                  <TableCell className="text-right">{formatDate(product.updatedAt, "full")}</TableCell>
                   <TableCell className="text-right">
                     <Link href={`/products/${product.id}`}>
                       <Button variant="ghost" size="icon">
@@ -154,3 +204,4 @@ export function ProductsTable({ products }: ProductsTableProps) {
     </div>
   )
 }
+

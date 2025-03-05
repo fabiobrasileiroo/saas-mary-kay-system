@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { getProduct, updateProduct, deleteProduct } from "@/lib/actions";
 import { Product } from "@/lib/types";
-import { ThemeToggle } from "@/components/theme-toggle";
+// import { ThemeToggle } from "@/components/theme-toggle";
 import { TooltipTerm } from "@/components/tooltip-term";
 
 export default function ProductPage({ params }: { params: { id: string } }) {
@@ -104,7 +104,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           <h1 className="text-3xl font-bold">Editar Produto</h1>
         </div>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive">
