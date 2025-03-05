@@ -106,7 +106,7 @@ export default function ClientsPage() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="mx-auto container max-md:px-2 max-lg:px-4 py-5 md:py-10 ">
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>{currentClient ? "Editar Cliente" : "Novo Cliente"}</CardTitle>

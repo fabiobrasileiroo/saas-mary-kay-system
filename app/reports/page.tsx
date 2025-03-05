@@ -99,7 +99,7 @@ export default function ReportsPage() {
 
   return (
     <div>
-      <div className="container py-10">
+      <div className="container max-md:px-2 max-lg:px-4 py-5 md:py-10 ">
         <BackButton href="/" />
         <div className="flex max-md:flex-col max-md:gap-4 items-center justify-between mb-6">
           <h1 className="text-3xl font-bold">Relatórios</h1>
