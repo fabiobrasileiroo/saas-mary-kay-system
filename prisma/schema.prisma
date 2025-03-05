@@ -53,16 +53,17 @@ model Sale {
 model SaleItem {
   id          String   @id @default(uuid())
   userId      String?
-  saleId      String
+  saleId      String   @unique
   sale        Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
   productId   String
   product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity    Int
   price       Float
   productName String
-  createdAt   DateTime @default(now()) // Adicionado
-  updatedAt   DateTime @updatedAt // Adicionado
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  Client   Client? @relation(fields: [clientId], references: [id])
-  clientId String?
+  // Relacionamento com Cliente (Opcional na venda)
+  clientId    String?
+  client      Client?   @relation(fields: [clientId], references: [id], onDelete: SetNull)
 }

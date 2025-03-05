@@ -31,6 +31,9 @@ export const Header = () => {
             <Link href="/sales">Vendas</Link>
           </Button>
           <Button asChild variant="ghost">
+            <Link href="/clients">Clientes</Link>
+          </Button>
+          <Button asChild variant="ghost">
             <Link href="/reports">Relatórios</Link>
           </Button>
           {/* <ThemeToggle /> */}
@@ -50,6 +53,7 @@ export const Header = () => {
             </SheetTrigger>
             <SheetContent side="right" className="flex flex-col gap-4 p-4">
               <Link href="/products" onClick={() => setIsOpen(false)}>Produtos</Link>
+              <Link href="/clients" onClick={() => setIsOpen(false)}>Clientes</Link>
               <Link href="/sales" onClick={() => setIsOpen(false)}>Vendas</Link>
               <Link href="/reports" onClick={() => setIsOpen(false)}>Relatórios</Link>
               <ThemeToggle />
