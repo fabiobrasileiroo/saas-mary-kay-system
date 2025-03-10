@@ -130,7 +130,7 @@ export default function NewProductPage() {
                 <Label htmlFor="sku">
                   <TooltipTerm term="SKU">Código SKU</TooltipTerm>
                 </Label>
-                <Input id="sku" name="sku" placeholder="MK-12345" required />
+                <Input id="sku" name="sku" placeholder="MK-12345"  />
               </div>
             </div>
 
