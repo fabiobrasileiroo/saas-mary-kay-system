@@ -22,35 +22,51 @@ export function ProductsTable({ products }: ProductsTableProps) {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products)
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("all")
+  const [sortBy, setSortBy] = useState<keyof Product>("id")
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Simulate loading
     setIsLoading(true)
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
-
+    const timer = setTimeout(() => setIsLoading(false), 1000)
     return () => clearTimeout(timer)
   }, [])
 
   useEffect(() => {
     let result = [...products]
 
+    // Filtro de busca
     if (searchTerm) {
       result = result.filter(
         (product) =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.sku.toLowerCase().includes(searchTerm.toLowerCase()),
+          product.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.id.toString().toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
-    if (categoryFilter && categoryFilter !== "all") {
+    // Filtro de categoria
+    if (categoryFilter !== "all") {
       result = result.filter((product) => product.category === categoryFilter)
     }
 
+    // Ordenação
+    result.sort((a, b) => {
+      if (sortBy === "id") {
+        const aId = Number(a.id)
+        const bId = Number(b.id)
+        if (!isNaN(aId) && !isNaN(bId)) {
+          return sortOrder === "asc" ? aId - bId : bId - aId
+        }
+        return sortOrder === "asc" 
+          ? a.id.toString().localeCompare(b.id.toString())
+          : b.id.toString().localeCompare(a.id.toString())
+      }
+      return 0
+    })
+
     setFilteredProducts(result)
-  }, [searchTerm, categoryFilter, products])
+  }, [searchTerm, categoryFilter, products, sortBy, sortOrder])
 
   function getCategoryLabel(category: string) {
     const categories: Record<string, string> = {
@@ -73,36 +89,17 @@ export function ProductsTable({ products }: ProductsTableProps) {
       <>
         {Array.from({ length: 5 }).map((_, index) => (
           <TableRow key={index}>
-            <TableCell>
-              <Skeleton className="h-4 w-[150px]" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-4 w-[100px]" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-4 w-[80px]" />
-            </TableCell>
-            <TableCell className="text-right">
-              <Skeleton className="h-4 w-[80px] ml-auto" />
-            </TableCell>
-            <TableCell className="text-right">
-              <Skeleton className="h-4 w-[80px] ml-auto" />
-            </TableCell>
-            <TableCell className="text-right">
-              <Skeleton className="h-4 w-[60px] ml-auto" />
-            </TableCell>
-            <TableCell className="text-right">
-              <Skeleton className="h-4 w-[40px] ml-auto" />
-            </TableCell>
-            <TableCell className="text-right">
-              <Skeleton className="h-4 w-[120px] ml-auto" />
-            </TableCell>
-            <TableCell className="text-right">
-              <Skeleton className="h-4 w-[120px] ml-auto" />
-            </TableCell>
-            <TableCell className="text-right">
-              <Skeleton className="h-8 w-8 rounded-full ml-auto" />
-            </TableCell>
+            <TableCell><Skeleton className="h-4 w-[85px]" /></TableCell>
+            <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
+            <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+            <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
+            <TableCell className="text-right"><Skeleton className="h-4 w-[80px] ml-auto" /></TableCell>
+            <TableCell className="text-right"><Skeleton className="h-4 w-[80px] ml-auto" /></TableCell>
+            <TableCell className="text-right"><Skeleton className="h-4 w-[60px] ml-auto" /></TableCell>
+            <TableCell className="text-right"><Skeleton className="h-4 w-[40px] ml-auto" /></TableCell>
+            <TableCell className="text-right"><Skeleton className="h-4 w-[120px] ml-auto" /></TableCell>
+            <TableCell className="text-right"><Skeleton className="h-4 w-[120px] ml-auto" /></TableCell>
+            <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
           </TableRow>
         ))}
       </>
@@ -115,7 +112,7 @@ export function ProductsTable({ products }: ProductsTableProps) {
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar por nome ou SKU..."
+            placeholder="Buscar por nome, SKU ou ID..."
             className="pl-8"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -140,6 +137,26 @@ export function ProductsTable({ products }: ProductsTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead 
+                className="cursor-pointer hover:bg-accent"
+                onClick={() => {
+                  if (sortBy === "id") {
+                    setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                  } else {
+                    setSortBy("id")
+                    setSortOrder("asc")
+                  }
+                }}
+              >
+                <div className="flex items-center gap-1">
+                  ID
+                  {sortBy === "id" && (
+                    <span className="text-xs">
+                      {sortOrder === "asc" ? "↑" : "↓"}
+                    </span>
+                  )}
+                </div>
+              </TableHead>
               <TableHead>Nome</TableHead>
               <TableHead>
                 <TooltipTerm term="Categoria">Categoria</TooltipTerm>
@@ -169,13 +186,14 @@ export function ProductsTable({ products }: ProductsTableProps) {
               <ProductTableSkeleton />
             ) : filteredProducts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={10} className="h-24 text-center">
+                <TableCell colSpan={11} className="h-24 text-center">
                   Nenhum produto encontrado.
                 </TableCell>
               </TableRow>
             ) : (
               filteredProducts.map((product) => (
                 <TableRow key={product.id}>
+                  <TableCell className="font-medium">{product.id}</TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{getCategoryLabel(product.category)}</TableCell>
                   <TableCell>{product.sku}</TableCell>
@@ -204,4 +222,3 @@ export function ProductsTable({ products }: ProductsTableProps) {
     </div>
   )
 }
-

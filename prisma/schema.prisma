@@ -27,7 +27,7 @@ model Product {
   costPrice    Float
   sellingPrice Float
   stock        Int
-  sku          String     @unique
+  sku          String?     @unique
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   sales        SaleItem[]

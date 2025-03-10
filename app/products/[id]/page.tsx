@@ -205,7 +205,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                 <Label htmlFor="sku">
                   <TooltipTerm term="SKU">Código SKU</TooltipTerm>
                 </Label>
-                <Input id="sku" name="sku" defaultValue={product.sku} required />
+                <Input id="sku" name="sku" defaultValue={product.sku ?? ""} />
               </div>
             </div>
 

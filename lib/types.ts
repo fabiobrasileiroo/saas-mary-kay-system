@@ -35,7 +35,7 @@ export interface Product {
   costPrice: number
   sellingPrice: number
   stock: number
-  sku: string
+  sku?: string | null
   userId?: string | null
   createdAt?: string
   updatedAt?: string
